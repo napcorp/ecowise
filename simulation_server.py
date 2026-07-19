@@ -242,7 +242,7 @@ def stt_api():
 
 @app.route('/api/tts', methods=['POST'])
 def tts_api():
-    """Handles Text-to-Speech conversion using Groq TTS (Orpheus)."""
+    """Handles Text-to-Speech conversion using Microsoft Edge TTS (high quality & free)."""
     data = request.get_json() or {}
     text = data.get('text', '').strip()
     
@@ -250,41 +250,17 @@ def tts_api():
         return jsonify({"error": "No text provided"}), 400
         
     try:
-        temp_audio_path = os.path.join(tempfile.gettempdir(), f"tts_{os.urandom(4).hex()}.wav")
+        temp_audio_path = os.path.join(tempfile.gettempdir(), f"tts_{os.urandom(4).hex()}.mp3")
         
-        client = Groq()
-        response = client.audio.speech.create(
-            model="canopylabs/orpheus-v1-english",
-            voice="daniel",
-            input=text,
-            response_format="wav"
-        )
-        
-        # Save audio binary to temp file
-        response.write_to_file(temp_audio_path)
+        # Run edge-tts asynchronously
+        import asyncio
+        asyncio.run(edge_tts.Communicate(text, "en-US-GuyNeural").save(temp_audio_path))
             
-        return send_file(temp_audio_path, mimetype="audio/wav", as_attachment=False)
+        return send_file(temp_audio_path, mimetype="audio/mpeg", as_attachment=False)
     except Exception as e:
         import traceback
         traceback.print_exc()
-        err_msg = str(e)
-        if "model_terms_required" in err_msg or "terms acceptance" in err_msg:
-            return jsonify({
-                "error": "The Groq model 'canopylabs/orpheus-v1-english' requires terms acceptance. Please accept them at: https://console.groq.com/playground?model=canopylabs%2Forpheus-v1-english"
-            }), 400
-        elif "model_permission_blocked_org" in err_msg or "blocked at the organization level" in err_msg:
-            return jsonify({
-                "error": "The Groq model 'canopylabs/orpheus-v1-english' is blocked at the organization level. Please enable it in org settings at: https://console.groq.com/settings/limits"
-            }), 403
-        elif "model_permission_blocked_project" in err_msg or "blocked at the project level" in err_msg:
-            return jsonify({
-                "error": "The Groq model 'canopylabs/orpheus-v1-english' is blocked at the project level. Please enable it in project settings at: https://console.groq.com/settings/project/limits"
-            }), 403
-        elif "rate_limit_exceeded" in err_msg or "Rate limit reached" in err_msg or "429" in err_msg:
-            return jsonify({
-                "error": "Groq TTS rate limit reached. Continuing in text-only mode."
-            }), 429
-        return jsonify({"error": err_msg}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
