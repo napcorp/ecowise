@@ -14,6 +14,28 @@ export default function SidePane({ isOpen, onClose, devices, events = [], fetchE
   const [newEventTitle, setNewEventTitle] = useState('')
   const [newEventTime, setNewEventTime] = useState('')
 
+  // Local state for sliders to prevent bouncing during polling
+  const [sliderVals, setSliderVals] = useState({})
+  const [dragging, setDragging] = useState(false)
+
+  useEffect(() => {
+    if (!dragging) {
+      setSliderVals({
+        thermostat: thermostat?.value || 72,
+        bedroom_lamp: bedroomLamp?.value || 80
+      })
+    }
+  }, [devices, dragging])
+
+  const handleSliderChange = (deviceId, val) => {
+    setSliderVals(prev => ({ ...prev, [deviceId]: val }))
+  }
+
+  const handleSliderCommit = (deviceId, key, val) => {
+    handleDeviceUpdate(deviceId, key, val)
+    setDragging(false)
+  }
+
   const handleAddEvent = async () => {
     if (!newEventTitle || !newEventTime) return
     try {
@@ -75,14 +97,18 @@ export default function SidePane({ isOpen, onClose, devices, events = [], fetchE
                 <div className="range-container">
                     <div className="range-label-row">
                         <span>Target Temp</span>
-                        <span>{thermostat.value}°F</span>
+                        <span>{sliderVals.thermostat}°F</span>
                     </div>
                     <input 
                       type="range" 
                       className="sim-range" 
                       min="50" max="90" 
-                      value={thermostat.value || 72}
-                      onChange={(e) => handleDeviceUpdate('thermostat', 'value', parseInt(e.target.value))} 
+                      value={sliderVals.thermostat || 72}
+                      onMouseDown={() => setDragging(true)}
+                      onTouchStart={() => setDragging(true)}
+                      onChange={(e) => handleSliderChange('thermostat', parseInt(e.target.value))}
+                      onMouseUp={(e) => handleSliderCommit('thermostat', 'value', parseInt(e.target.value))}
+                      onTouchEnd={(e) => handleSliderCommit('thermostat', 'value', parseInt(e.target.value))}
                     />
                 </div>
                 <div style={{ marginTop: '1rem' }}>
@@ -149,14 +175,18 @@ export default function SidePane({ isOpen, onClose, devices, events = [], fetchE
                 <div className="range-container">
                     <div className="range-label-row">
                         <span>Brightness</span>
-                        <span>{bedroomLamp.value || 80}%</span>
+                        <span>{sliderVals.bedroom_lamp}%</span>
                     </div>
                     <input 
                       type="range" 
                       className="sim-range" 
                       min="10" max="100" 
-                      value={bedroomLamp.value || 80}
-                      onChange={(e) => handleDeviceUpdate('bedroom_lamp', 'value', parseInt(e.target.value))} 
+                      value={sliderVals.bedroom_lamp || 80}
+                      onMouseDown={() => setDragging(true)}
+                      onTouchStart={() => setDragging(true)}
+                      onChange={(e) => handleSliderChange('bedroom_lamp', parseInt(e.target.value))}
+                      onMouseUp={(e) => handleSliderCommit('bedroom_lamp', 'value', parseInt(e.target.value))}
+                      onTouchEnd={(e) => handleSliderCommit('bedroom_lamp', 'value', parseInt(e.target.value))}
                     />
                 </div>
             </div>
