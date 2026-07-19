@@ -15,7 +15,17 @@ const INITIAL_MESSAGES = [
 function App() {
   const [devices, setDevices] = useState([])
   const [events, setEvents] = useState([])
-  const [messages, setMessages] = useState(INITIAL_MESSAGES)
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ecoWiseMessages')
+      if (saved) return JSON.parse(saved)
+    } catch(e) {}
+    return INITIAL_MESSAGES
+  })
+
+  useEffect(() => {
+    localStorage.setItem('ecoWiseMessages', JSON.stringify(messages))
+  }, [messages])
   const [telemetry, setTelemetry] = useState({
     time: 'Detecting...',
     location: 'Detecting...',

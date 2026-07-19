@@ -4,8 +4,12 @@ import threading
 from groq import Groq
 from supabase import create_client
 
-CHAT_HISTORY_FILE = "chat_history.json"
-COMPANION_BRAIN_FILE = "companion_brain.json"
+if os.environ.get("VERCEL"):
+    CHAT_HISTORY_FILE = "/tmp/chat_history.json"
+    COMPANION_BRAIN_FILE = "/tmp/companion_brain.json"
+else:
+    CHAT_HISTORY_FILE = "chat_history.json"
+    COMPANION_BRAIN_FILE = "companion_brain.json"
 
 # In-memory caches
 _chat_history = []
@@ -43,17 +47,20 @@ def load_all():
             try:
                 # Load history
                 hist_res = client.table("brain_memory").select("value").eq("key", "history").execute()
-                if hist_res.data:
+                if getattr(hist_res, 'data', None):
                     _chat_history = hist_res.data[0]["value"]
                 else:
-                    _chat_history = []
+                    print("Supabase returned empty data for history. RLS might be active. Falling back to local.")
+                    raise Exception("RLS blocked read")
                 
                 # Load brain data
                 brain_res = client.table("brain_memory").select("value").eq("key", "brain_profile").execute()
-                if brain_res.data:
+                if getattr(brain_res, 'data', None):
                     _brain_data = brain_res.data[0]["value"]
                 else:
-                    client.table("brain_memory").upsert({"key": "brain_profile", "value": _brain_data}).execute()
+                    res = client.table("brain_memory").upsert({"key": "brain_profile", "value": _brain_data}).execute()
+                    if not getattr(res, 'data', None):
+                         raise Exception("RLS blocked upsert")
                 return
             except Exception as e:
                 print(f"[Brain Manager] Error loading from Supabase: {e}. Falling back to local files.")

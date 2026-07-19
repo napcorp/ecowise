@@ -160,7 +160,7 @@ def chat_api():
     # Match the overall action block (or multiple blocks) and parse all updates inside it
     action_blocks = re.findall(r"\[ACTION:\s*(.*?)\s*\]", response_text, re.DOTALL)
     for block in action_blocks:
-        calls = re.findall(r"update_device\(['\"]([^'\"]*)['\"],\s*['\"]([^'\"]*)['\"],\s*['\"]([^'\"]*)['\"]\)", block)
+        calls = re.findall(r"update_device\(['\"]([^'\"]*)['\"],\s*['\"]([^'\"]*)['\"],\s*['\"]?([^'\"\)]*?)['\"]?\)", block)
         for device_id, field_key, new_value in calls:
             success = devices.update_device(device_id, field_key, new_value)
             if success:
@@ -177,7 +177,7 @@ def chat_api():
                     mode = 'OFF' if new_value == 'OFF' else 'Cooling'
                     devices.update_device(device_id, 'mode', mode)
                     
-        event_calls = re.findall(r"add_event\(['\"]([^'\"]*)['\"],\s*['\"]([^'\"]*)['\"]\)", block)
+        event_calls = re.findall(r"add_event\(['\"]([^'\"]*)['\"],\s*['\"]?([^'\"\)]*?)['\"]?\)", block)
         for title, time_str in event_calls:
             calendar_events.add_event(title, time_str)
             action_triggered = True

@@ -1,12 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 
-export default function ChatPanel({ fetchDevices }) {
-  const [messages, setMessages] = useState([
-    {
-      sender: 'bot',
-      text: "Hello there, buddy! EcoWise here. I'm all booted up, synced with your home's telemetry, and ready to keep you company. Let's make some simple, green choices today!"
-    }
-  ])
+export default function ChatPanel({ fetchDevices, messages, setMessages }) {
   const [inputText, setInputText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isRecording, setIsRecording] = useState(false)

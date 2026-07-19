@@ -3,7 +3,10 @@ import os
 import uuid
 from supabase import create_client
 
-CALENDAR_FILE = os.path.join(os.path.dirname(__file__), 'calendar.json')
+if os.environ.get("VERCEL"):
+    CALENDAR_FILE = '/tmp/calendar.json'
+else:
+    CALENDAR_FILE = os.path.join(os.path.dirname(__file__), 'calendar.json')
 
 _supabase_client = None
 
@@ -26,7 +29,10 @@ def load_events():
     if client:
         try:
             response = client.table("calendar_events").select("*").execute()
-            return response.data
+            if getattr(response, 'data', None):
+                return response.data
+            else:
+                print("Supabase returned empty data. RLS might be active. Falling back to local JSON.")
         except Exception as e:
             print(f"Error reading calendar from Supabase: {e}")
 
@@ -59,9 +65,12 @@ def add_event(title, time_str):
     client = get_supabase_client()
     if client:
         try:
-            client.table("calendar_events").insert(new_event).execute()
-            print(f"[Supabase Calendar Manager] Added event: {title} at {time_str}")
-            return new_event
+            res = client.table("calendar_events").insert(new_event).execute()
+            if getattr(res, 'data', None):
+                print(f"[Supabase Calendar Manager] Added event: {title} at {time_str}")
+                return new_event
+            else:
+                print("Supabase insert returned empty data (RLS active?). Falling back to local.")
         except Exception as e:
             print(f"Error adding event to Supabase: {e}")
             

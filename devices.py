@@ -3,7 +3,10 @@ import os
 from supabase import create_client
 
 # Path to the shared state file
-DEVICES_FILE = os.path.join(os.path.dirname(__file__), 'devices.json')
+if os.environ.get("VERCEL"):
+    DEVICES_FILE = '/tmp/devices.json'
+else:
+    DEVICES_FILE = os.path.join(os.path.dirname(__file__), 'devices.json')
 
 DEFAULT_DEVICES = [
   {
@@ -74,20 +77,24 @@ def load_devices():
             if data:
                 return sorted(data, key=lambda x: x['id'])
             else:
-                # Seed database if it's empty using correct schema structure
-                client.table("devices").insert(DEFAULT_DEVICES).execute()
-                return sorted(DEFAULT_DEVICES, key=lambda x: x['id'])
+                # Try to seed database
+                res = client.table("devices").insert(DEFAULT_DEVICES).execute()
+                if getattr(res, 'data', None):
+                    return sorted(res.data, key=lambda x: x['id'])
+                else:
+                    print("Supabase returned empty data on insert. RLS is likely active. Falling back to local JSON.")
         except Exception as e:
             print(f"Error reading devices from Supabase: {e}")
             
     if not os.path.exists(DEVICES_FILE):
-        return []
+        save_devices(DEFAULT_DEVICES)
+        return sorted(DEFAULT_DEVICES, key=lambda x: x['id'])
     try:
         with open(DEVICES_FILE, 'r') as f:
             return json.load(f)
     except Exception as e:
         print(f"Error loading devices: {e}")
-        return []
+        return sorted(DEFAULT_DEVICES, key=lambda x: x['id'])
 
 def save_devices(devices):
     """Saves all devices back to the JSON file (local fallback)."""
@@ -119,9 +126,12 @@ def update_device(device_id, key, value):
     client = get_supabase_client()
     if client:
         try:
-            client.table("devices").update({key: value}).eq("id", device_id).execute()
-            print(f"[Supabase Device Manager] Updated {device_id} -> {key}: {value}")
-            return True
+            res = client.table("devices").update({key: value}).eq("id", device_id).execute()
+            if getattr(res, 'data', None):
+                print(f"[Supabase Device Manager] Updated {device_id} -> {key}: {value}")
+                return True
+            else:
+                print("Supabase update returned empty data. RLS is likely active. Falling back to local.")
         except Exception as e:
             print(f"Error updating device in Supabase: {e}")
 
