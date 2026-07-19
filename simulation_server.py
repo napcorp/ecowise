@@ -64,7 +64,37 @@ def delete_event_api(event_id):
 @app.route('/api/telemetry', methods=['GET'])
 def get_telemetry_api():
     """Returns live date/time, location, and weather telemetry from APIs."""
-    current_time, location, weather = chatbot_app.get_live_context()
+    city = request.headers.get('x-vercel-ip-city')
+    region = request.headers.get('x-vercel-ip-country-region')
+    country = request.headers.get('x-vercel-ip-country')
+    lat = request.headers.get('x-vercel-ip-latitude')
+    lon = request.headers.get('x-vercel-ip-longitude')
+    
+    if city and region and country and lat and lon:
+        location = f"{city}, {region}, {country}"
+        import urllib.request, json
+        try:
+            weather_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code,wind_speed_10m"
+            req = urllib.request.Request(weather_url, headers={'User-Agent': 'EcoWise-Companion/1.0'})
+            with urllib.request.urlopen(req, timeout=3) as res:
+                w_data = json.loads(res.read().decode())
+                current = w_data.get("current", {})
+                temp_c = current.get("temperature_2m", 23.9)
+                temp_f = round((temp_c * 9/5) + 32, 1)
+                w_code = current.get("weather_code", 0)
+                wind = current.get("wind_speed_10m", 0)
+                WEATHER_CODES = {0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast", 45: "Fog", 48: "Depositing rime fog", 51: "Light drizzle", 53: "Moderate drizzle", 55: "Dense drizzle", 61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain", 71: "Slight snow", 73: "Moderate snow", 75: "Heavy snow", 95: "Thunderstorm"}
+                desc = WEATHER_CODES.get(w_code, "Unknown")
+                weather = f"{temp_f}°F ({temp_c}°C), {desc} (Wind: {wind} km/h)"
+        except Exception:
+            weather = "75.0°F (23.9°C), mainly clear"
+            
+        import datetime
+        now = datetime.datetime.now()
+        current_time = now.strftime("%A, %B %d, %Y, %I:%M %p")
+    else:
+        current_time, location, weather = chatbot_app.get_live_context()
+        
     return jsonify({
         "time": current_time,
         "location": location,

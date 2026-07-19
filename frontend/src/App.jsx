@@ -122,7 +122,7 @@ function App() {
     <>
       <header>
         <div className="header-logo">
-            <span className="logo-icon">🌿</span>
+            <img src="/logo.png" alt="EcoWise Logo" className="logo-icon" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
             <div>
                 <h1>EcoWise</h1>
                 <p className="motto">Nurturing habits, protecting our planet, together.</p>
@@ -138,14 +138,14 @@ function App() {
 
         {/* Desktop Telemetry Bar */}
         <div className="telemetry-bar desktop-only">
-            <div className="telemetry-item">
-                📍 Location: <strong>{telemetry.location}</strong>
+            <div className="telemetry-item" title={telemetry.location}>
+                📍 <strong>{telemetry.location}</strong>
             </div>
-            <div className="telemetry-item">
-                ⛅ Weather: <strong>{telemetry.weather}</strong>
+            <div className="telemetry-item" title={telemetry.weather}>
+                ⛅ <strong>{telemetry.weather}</strong>
             </div>
-            <div className="telemetry-item">
-                🕒 Time: <strong>{telemetry.time}</strong>
+            <div className="telemetry-item" title={telemetry.time}>
+                🕒 <strong>{telemetry.time}</strong>
             </div>
         </div>
 
@@ -168,13 +168,13 @@ function App() {
               ⚙️ Simulations
           </NavLink>
           <div className="telemetry-item" style={{ marginTop: '1rem' }}>
-              📍 Location: <strong>{telemetry.location}</strong>
+              📍 <strong>{telemetry.location}</strong>
           </div>
           <div className="telemetry-item">
-              ⛅ Weather: <strong>{telemetry.weather}</strong>
+              ⛅ <strong>{telemetry.weather}</strong>
           </div>
           <div className="telemetry-item">
-              🕒 Time: <strong>{telemetry.time}</strong>
+              🕒 <strong>{telemetry.time}</strong>
           </div>
       </div>
 
