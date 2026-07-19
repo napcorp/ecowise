@@ -17,6 +17,10 @@
       "dest": "api/index.py"
     },
     {
+      "src": "/(.*\\.[a-zA-Z0-9]+)$",
+      "dest": "frontend/$1"
+    },
+    {
       "handle": "filesystem"
     },
     {
