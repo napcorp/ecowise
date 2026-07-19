@@ -5,6 +5,49 @@ from supabase import create_client
 # Path to the shared state file
 DEVICES_FILE = os.path.join(os.path.dirname(__file__), 'devices.json')
 
+DEFAULT_DEVICES = [
+  {
+    "id": "thermostat",
+    "name": "Living Room Thermostat",
+    "icon": "🌡️",
+    "status": "OFF",
+    "value": 74,
+    "mode": "OFF",
+    "eco_mode": True,
+    "power_watts": 0
+  },
+  {
+    "id": "coffee_plug",
+    "name": "Kitchen Smart Plug",
+    "icon": "☕",
+    "status": "OFF",
+    "value": 0,
+    "mode": "OFF",
+    "eco_mode": False,
+    "power_watts": 0
+  },
+  {
+    "id": "bedroom_lamp",
+    "name": "Bedroom Lamp",
+    "icon": "💡",
+    "status": "OFF",
+    "value": 50,
+    "mode": "OFF",
+    "eco_mode": False,
+    "power_watts": 0
+  },
+  {
+    "id": "garden_irrigation",
+    "name": "Smart Garden Irrigation",
+    "icon": "💦",
+    "status": "OFF",
+    "value": 0,
+    "mode": "OFF",
+    "eco_mode": False,
+    "power_watts": 0
+  }
+]
+
 _supabase_client = None
 
 def get_supabase_client():
@@ -31,21 +74,9 @@ def load_devices():
             if data:
                 return sorted(data, key=lambda x: x['id'])
             else:
-                # Seed database if it's empty
-                local_data = []
-                if os.path.exists(DEVICES_FILE):
-                    with open(DEVICES_FILE, 'r') as f:
-                        local_data = json.load(f)
-                if local_data:
-                    # Clean up keys not present in DB schema (e.g. type, device_connected, next_run are handled in formatting, but let's store them if table has columns. Wait, our schema does not have 'type', 'device_connected', or 'next_run'. Wait, let's see. The schema we designed has id, name, icon, status, value, mode, eco_mode, power_watts. If the schema doesn't have other keys, we should only insert columns that match the schema, or we can add them to schema. Actually, our schema didn't include type/device_connected, so let's only insert valid columns.)
-                    # Let's filter the keys
-                    valid_columns = {'id', 'name', 'icon', 'status', 'value', 'mode', 'eco_mode', 'power_watts'}
-                    filtered_data = []
-                    for d in local_data:
-                        filtered_d = {k: v for k, v in d.items() if k in valid_columns}
-                        filtered_data.append(filtered_d)
-                    client.table("devices").insert(filtered_data).execute()
-                return local_data
+                # Seed database if it's empty using correct schema structure
+                client.table("devices").insert(DEFAULT_DEVICES).execute()
+                return sorted(DEFAULT_DEVICES, key=lambda x: x['id'])
         except Exception as e:
             print(f"Error reading devices from Supabase: {e}")
             
