@@ -25,7 +25,7 @@ def get_supabase_client():
     if _supabase_client is not None:
         return _supabase_client
     url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_KEY")
+    key = os.environ.get("SUPABASE_KEY") or os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
     if url and key:
         try:
             _supabase_client = create_client(url, key)
