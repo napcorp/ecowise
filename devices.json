@@ -1,0 +1,33 @@
+[
+  {
+    "id": "thermostat",
+    "name": "Living Room Thermostat",
+    "type": "thermostat",
+    "status": "OFF",
+    "value": 74,
+    "mode": "OFF",
+    "eco_mode": true
+  },
+  {
+    "id": "coffee_plug",
+    "name": "Kitchen Smart Plug",
+    "type": "plug",
+    "status": "OFF",
+    "device_connected": "Coffee Maker",
+    "power_watts": 0
+  },
+  {
+    "id": "bedroom_lamp",
+    "name": "Bedroom Lamp",
+    "type": "light",
+    "status": "OFF",
+    "value": 50
+  },
+  {
+    "id": "garden_irrigation",
+    "name": "Smart Garden Irrigation",
+    "type": "irrigation",
+    "status": "OFF",
+    "next_run": "Tomorrow 6:00 AM"
+  }
+]

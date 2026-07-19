@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoWise - Eco-Friendly Smart Home Companion</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0b1410 0%, #030604 100%);
+            --card-bg: rgba(22, 38, 30, 0.45);
+            --card-border: rgba(52, 211, 153, 0.15);
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16, 185, 129, 0.35);
+            --accent-blue: #3b82f6;
+            --accent-blue-glow: rgba(59, 130, 246, 0.35);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.3);
+            --chat-user-bg: rgba(59, 130, 246, 0.2);
+            --chat-user-border: rgba(59, 130, 246, 0.35);
+            --chat-bot-bg: rgba(16, 185, 129, 0.15);
+            --chat-bot-border: rgba(16, 185, 129, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphic Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(16, 185, 129, 0.4);
+        }
+
+        /* Main Header Layout */
+        header {
+            width: 100%;
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(11, 20, 16, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            filter: drop-shadow(0 0 8px var(--accent-green-glow));
+            animation: pulse-slow 3s infinite;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(120deg, #a7f3d0 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .telemetry-bar {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .telemetry-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.4rem 1rem;
+            border-radius: 99px;
+            backdrop-filter: blur(4px);
+        }
+
+        .telemetry-item strong {
+            color: var(--accent-green);
+        }
+
+        /* Main Portal Workspace Grid */
+        .portal-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            padding: 2rem 2.5rem;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+            align-items: stretch;
+            height: calc(100vh - 85px);
+        }
+
+        @media (max-width: 1024px) {
+            .portal-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+                padding-bottom: 6rem;
+            }
+        }
+
+        /* Standard Card Panel Styling */
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s ease;
+        }
+
+        .panel-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .panel-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .dot-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green-glow);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        /* Chatbot Panel Flow */
+        .chat-body {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .message {
+            max-width: 82%;
+            padding: 1rem 1.4rem;
+            border-radius: 22px;
+            line-height: 1.5;
+            font-size: 0.98rem;
+            position: relative;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: var(--chat-bot-bg);
+            border: 1px solid var(--chat-bot-border);
+            border-top-left-radius: 4px;
+            color: var(--text-primary);
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--chat-user-bg);
+            border: 1px solid var(--chat-user-border);
+            border-top-right-radius: 4px;
+            color: var(--text-primary);
+        }
+
+        .message-header {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .message.bot .message-header {
+            color: var(--accent-green);
+        }
+
+        .message.user .message-header {
+            color: var(--accent-blue);
+        }
+
+        /* Loading Animation Bubble */
+        .message.loading {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            align-self: flex-start;
+            width: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.8rem;
+        }
+
+        .dots-wave {
+            display: flex;
+            gap: 4px;
+        }
+
+        .dots-wave span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: dot-wave 1.2s infinite ease-in-out;
+        }
+
+        .dots-wave span:nth-child(2) { animation-delay: 0.2s; }
+        .dots-wave span:nth-child(3) { animation-delay: 0.4s; }
+
+        .chat-footer {
+            padding: 1.25rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 0.9rem 1.4rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green-glow);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            color: white;
+            padding: 0.9rem 1.8rem;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--accent-green-glow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            color: white;
+        }
+
+        /* Smart Devices Live Status Panel */
+        .devices-body {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: grid;
+            grid-template-rows: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.25rem 1.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(52, 211, 153, 0.1);
+            transform: scale(1.01);
+        }
+
+        .status-card.active {
+            background: rgba(16, 185, 129, 0.04);
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .device-info {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .device-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-card.active .device-avatar {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--accent-green);
+            text-shadow: 0 0 8px var(--accent-green-glow);
+        }
+
+        .device-details h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .device-details p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .badge-status {
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 0.35rem 0.9rem;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .badge-status.on {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-green);
+        }
+
+        .badge-status.off {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+        }
+
+        /* Floating Advanced Simulator Drawer */
+        .simulator-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+            color: white;
+            width: 180px;
+            height: 52px;
+            border-radius: 99px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px var(--accent-blue-glow);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+        }
+
+        .simulator-fab:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.6);
+        }
+
+        .sim-drawer {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 420px;
+            max-height: 80vh;
+            background: rgba(11, 22, 18, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 30px rgba(59, 130, 246, 0.15);
+            z-index: 99;
+            transform: scale(0.8) translateY(100px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .sim-drawer.open {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sim-header {
+            padding: 1.25rem 1.75rem;
+            background: rgba(59, 130, 246, 0.08);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sim-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sim-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .sim-close:hover {
+            color: var(--text-primary);
+        }
+
+        .sim-body {
+            padding: 1.75rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Adjustment Control elements */
+        .control-group {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 18px;
+            padding: 1.2rem 1.4rem;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .control-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        /* Premium switch toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.1);
+            transition: .3s;
+            border-radius: 34px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-primary);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-green);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Range controls styling */
+        .range-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .range-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .sim-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+            margin: 0.5rem 0;
+        }
+
+        .sim-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+            transition: transform 0.1s;
+        }
+
+        .sim-range::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Modes Selector Tab group */
+        .selector-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 0.3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.4rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+
+        /* Keyframes */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.9; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        @keyframes pulse-dot {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        @keyframes dot-wave {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(12px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Panel -->
+    <header>
+        <div class="header-logo">
+            <span class="logo-icon">🌿</span>
+            <div>
+                <h1>EcoWise</h1>
+            </div>
+        </div>
+        <div class="telemetry-bar">
+            <div class="telemetry-item">
+                📍 Location: <strong id="live-location">Detecting...</strong>
+            </div>
+            <div class="telemetry-item">
+                ⛅ Weather: <strong id="live-weather">Detecting...</strong>
+            </div>
+            <div class="telemetry-item">
+                🕒 Time: <strong id="live-time">Detecting...</strong>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Portal Grid -->
+    <div class="portal-grid">
+        
+        <!-- Left: Chat Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="dot-pulse"></span>
+                    <span>Chatting with EcoWise</span>
+                </div>
+                <button class="btn btn-secondary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;" onclick="clearChat()">Clear Chat</button>
+            </div>
+            <div class="chat-body" id="chat-feed">
+                <!-- Welcome Dialog Turn -->
+                <div class="message bot">
+                        <div class="message-header">EcoWise</div>
+                    Hello there, buddy! EcoWise here. I'm all booted up, synced with your home's telemetry, and ready to keep you company. Let's make some simple, green choices today!
+                </div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" class="chat-input" id="chat-message-input" placeholder="Type a message to EcoWise..." onkeydown="handleInputKey(event)">
+                <button class="btn" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <!-- Right: Connected Devices Monitor -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">🌿 Device Status Monitor</div>
+            </div>
+            <div class="devices-body" id="devices-status-container">
+                <!-- Dynamic status cards are rendered here via JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Simulator Toggle Floating Action Button -->
+    <button class="simulator-fab" onclick="toggleSimulatorDrawer()">
+        ⚙️ Advanced Simulator
+    </button>
+
+    <!-- Simulator Control Drawer panel -->
+    <div class="sim-drawer" id="simulator-drawer">
+        <div class="sim-header">
+            <h2>⚙️ Advanced Simulator Controls</h2>
+            <button class="sim-close" onclick="toggleSimulatorDrawer()">×</button>
+        </div>
+        <div class="sim-body">
+            
+            <!-- Thermostat Controls -->
+            <div class="control-group">
+                <div class="control-header">
+                    <span class="control-title">Living Room Thermostat</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sim-therm-status" onchange="toggleDeviceSwitch('thermostat', 'status', this)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="range-container">
+                    <div class="range-label-row">
+                        <span>Target Temp</span>
+                        <span id="lbl-therm-val">72°F</span>
+                    </div>
+                    <input type="range" class="sim-range" id="sim-therm-val" min="50" max="90" oninput="updateRangeLabel('therm', this.value)" onchange="sendDeviceUpdate('thermostat', 'value', parseInt(this.value))">
+                </div>
+                <div style="margin-top: 1rem;">
+                    <div class="range-label-row" style="margin-bottom: 0.4rem;">
+                        <span>System Mode</span>
+                    </div>
+                    <div class="selector-tabs">
+                        <button class="tab-btn" id="tab-therm-cooling" onclick="sendDeviceUpdate('thermostat', 'mode', 'Cooling')">Cooling</button>
+                        <button class="tab-btn" id="tab-therm-heating" onclick="sendDeviceUpdate('thermostat', 'mode', 'Heating')">Heating</button>
+                        <button class="tab-btn" id="tab-therm-off" onclick="sendDeviceUpdate('thermostat', 'mode', 'OFF')">OFF</button>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Eco Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sim-therm-eco" onchange="toggleDeviceSwitch('thermostat', 'eco_mode', this, true)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Smart Plug Controls -->
+            <div class="control-group">
+                <div class="control-header">
+                    <span class="control-title">Kitchen Smart Plug (Coffee Maker)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sim-plug-status" onchange="toggleDeviceSwitch('coffee_plug', 'status', this)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="range-label-row">
+                    <span>Power Usage</span>
+                    <span id="lbl-plug-watts">0 Watts</span>
+                </div>
+            </div>
+
+            <!-- Bedroom Lamp Controls -->
+            <div class="control-group">
+                <div class="control-header">
+                    <span class="control-title">Bedroom Lamp</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sim-lamp-status" onchange="toggleDeviceSwitch('bedroom_lamp', 'status', this)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="range-container">
+                    <div class="range-label-row">
+                        <span>Brightness</span>
+                        <span id="lbl-lamp-val">80%</span>
+                    </div>
+                    <input type="range" class="sim-range" id="sim-lamp-val" min="10" max="100" oninput="updateRangeLabel('lamp', this.value)" onchange="sendDeviceUpdate('bedroom_lamp', 'value', parseInt(this.value))">
+                </div>
+            </div>
+
+            <!-- Garden Irrigation Controls -->
+            <div class="control-group">
+                <div class="control-header">
+                    <span class="control-title">Garden Irrigation</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sim-garden-status" onchange="toggleDeviceSwitch('garden_irrigation', 'status', this)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Frontend Scripting Logic -->
+    <script>
+        let isDrawerOpen = false;
+
+        // Toggle Simulation Panel Overlay
+        function toggleSimulatorDrawer() {
+            isDrawerOpen = !isDrawerOpen;
+            const drawer = document.getElementById('simulator-drawer');
+            if (isDrawerOpen) {
+                drawer.classList.add('open');
+            } else {
+                drawer.classList.remove('open');
+            }
+        }
+
+        // Live Date & Time updating ticker
+        function updateTimeTicker() {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 should be 12
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            
+            const timeStr = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()} at ${hours}:${minutes} ${ampm}`;
+            document.getElementById('live-time').innerText = timeStr;
+        }
+        setInterval(updateTimeTicker, 1000);
+        updateTimeTicker();
+
+        // 1. Devices Status Polling Loop
+        async function fetchDevices() {
+            try {
+                const response = await fetch('/api/devices');
+                const devices = await response.json();
+                
+                renderDevicesStatus(devices);
+                syncSimulatorControlInputs(devices);
+            } catch (err) {
+                console.error("Error polling devices state: ", err);
+            }
+        }
+
+        // Parse and render the device list in the UI on the right side
+        function renderDevicesStatus(devicesList) {
+            const container = document.getElementById('devices-status-container');
+            container.innerHTML = ''; // clear
+
+            // Icon Mapping Helper
+            const avatars = {
+                thermostat: '🌡️',
+                coffee_plug: '☕',
+                bedroom_lamp: '💡',
+                garden_irrigation: '💦'
+            };
+
+            devicesList.forEach(device => {
+                const isActive = device.status === 'ON';
+                const card = document.createElement('div');
+                card.className = `status-card ${isActive ? 'active' : ''}`;
+                
+                // Construct detailed values block
+                let detailsText = '';
+                if (device.id === 'thermostat') {
+                    detailsText = `Set to ${device.value}°F | Mode: ${device.mode} ${device.eco_mode ? '(Eco Leaf 🍃)' : ''}`;
+                } else if (device.id === 'coffee_plug') {
+                    detailsText = isActive ? `Active (${device.device_connected}) | Drawing ${device.power_watts}W` : `Idle (${device.device_connected})`;
+                } else if (device.id === 'bedroom_lamp') {
+                    detailsText = isActive ? `Glow Brightness: ${device.value}%` : `Powered Off`;
+                } else if (device.id === 'garden_irrigation') {
+                    detailsText = isActive ? `Sprinklers Active` : `System Idle`;
+                }
+
+                card.innerHTML = `
+                    <div class="device-info">
+                        <div class="device-avatar">${avatars[device.id] || '⚙️'}</div>
+                        <div class="device-details">
+                            <h3>${device.name}</h3>
+                            <p>${detailsText}</p>
+                        </div>
+                    </div>
+                    <span class="badge-status ${isActive ? 'on' : 'off'}">
+                        ${isActive ? '● ON' : '○ OFF'}
+                    </span>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Sync advanced simulation panel switches & sliders to the actual database state
+        function syncSimulatorControlInputs(devicesList) {
+            devicesList.forEach(device => {
+                if (device.id === 'thermostat') {
+                    document.getElementById('sim-therm-status').checked = (device.status === 'ON');
+                    document.getElementById('sim-therm-val').value = device.value;
+                    document.getElementById('lbl-therm-val').innerText = `${device.value}°F`;
+                    document.getElementById('sim-therm-eco').checked = device.eco_mode;
+
+                    // Sync Mode buttons highlighting
+                    document.getElementById('tab-therm-cooling').className = `tab-btn ${device.mode === 'Cooling' ? 'active' : ''}`;
+                    document.getElementById('tab-therm-heating').className = `tab-btn ${device.mode === 'Heating' ? 'active' : ''}`;
+                    document.getElementById('tab-therm-off').className = `tab-btn ${device.mode === 'OFF' ? 'active' : ''}`;
+                } else if (device.id === 'coffee_plug') {
+                    document.getElementById('sim-plug-status').checked = (device.status === 'ON');
+                    document.getElementById('lbl-plug-watts').innerText = `${device.power_watts} Watts`;
+                } else if (device.id === 'bedroom_lamp') {
+                    document.getElementById('sim-lamp-status').checked = (device.status === 'ON');
+                    document.getElementById('sim-lamp-val').value = device.value;
+                    document.getElementById('lbl-lamp-val').innerText = `${device.value}%`;
+                } else if (device.id === 'garden_irrigation') {
+                    document.getElementById('sim-garden-status').checked = (device.status === 'ON');
+                }
+            });
+        }
+
+        // Start dynamic weather/location telemetry loading
+        async function loadTelemetry() {
+            try {
+                const response = await fetch('/api/telemetry');
+                const telemetry = await response.json();
+                
+                document.getElementById('live-location').innerText = telemetry.location;
+                document.getElementById('live-weather').innerText = telemetry.weather;
+                // Overwrite live-time text with synchronized dynamic datetime from backend
+                document.getElementById('live-time').innerText = telemetry.time;
+            } catch (err) {
+                console.error("Error loading telemetry: ", err);
+            }
+        }
+
+        // Initialize polling cycles
+        setInterval(fetchDevices, 1500);
+        fetchDevices();
+        setTimeout(loadTelemetry, 500);
+
+        // Helper label ranges updater
+        function updateRangeLabel(type, val) {
+            if (type === 'therm') {
+                document.getElementById('lbl-therm-val').innerText = `${val}°F`;
+            } else if (type === 'lamp') {
+                document.getElementById('lbl-lamp-val').innerText = `${val}%`;
+            }
+        }
+
+        // Send manual state updates from Advanced Simulator UI to Flask endpoints
+        async function sendDeviceUpdate(deviceId, key, value) {
+            try {
+                const response = await fetch(`/api/devices/${deviceId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, value })
+                });
+                const res = await response.json();
+                if (res.success) {
+                    // Update layout immediately
+                    fetchDevices();
+                }
+            } catch (err) {
+                console.error("Error updating device state manually: ", err);
+            }
+        }
+
+        // Toggle switcher inputs
+        function toggleDeviceSwitch(deviceId, key, element, isBoolean = false) {
+            let val = element.checked;
+            if (!isBoolean) {
+                val = val ? 'ON' : 'OFF';
+            }
+            sendDeviceUpdate(deviceId, key, val);
+        }
+
+        // 2. Chat interface communication handlers
+        function handleInputKey(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-message-input');
+            const messageText = input.value.trim();
+            if (!messageText) return;
+
+            // Clear input box
+            input.value = '';
+
+            // Render user bubble
+            appendMessageBubble("user", messageText);
+
+            // Render thinking loader bubble
+            const loaderId = appendLoadingBubble();
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: messageText })
+                });
+                const res = await response.json();
+                
+                // Remove loader bubble
+                document.getElementById(loaderId).remove();
+
+                // Append chatbot reply
+                appendMessageBubble("bot", res.response);
+                
+                // Force state update immediately if device state was modified
+                fetchDevices();
+            } catch (err) {
+                document.getElementById(loaderId).remove();
+                appendMessageBubble("bot", "[Failed to connect with EcoWise. Ensure python server is running and GROQ_API_KEY is configured.]");
+            }
+        }
+
+        function appendMessageBubble(sender, text) {
+            const feed = document.getElementById('chat-feed');
+            const card = document.createElement('div');
+            card.className = `message ${sender}`;
+            
+            const headerLabel = sender === 'user' ? 'You' : 'EcoWise';
+            card.innerHTML = `
+                <div class="message-header">${headerLabel}</div>
+                <div>${text}</div>
+            `;
+            feed.appendChild(card);
+            
+            // Scroll to bottom
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function appendLoadingBubble() {
+            const feed = document.getElementById('chat-feed');
+            const card = document.createElement('div');
+            const id = 'loader-' + Date.now();
+            card.id = id;
+            card.className = 'message loading';
+            card.innerHTML = `
+                <div class="dots-wave">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            feed.appendChild(card);
+            feed.scrollTop = feed.scrollHeight;
+            return id;
+        }
+
+        // Clear chat context endpoint
+        async function clearChat() {
+            try {
+                await fetch('/api/chat/clear', { method: 'POST' });
+                
+                // Reset UI view to welcome message
+                const feed = document.getElementById('chat-feed');
+                feed.innerHTML = `
+                    <div class="message bot">
+                    <div class="message-header">EcoWise</div>
+                        Hello there, buddy! EcoWise here. I'm all booted up, synced with your home's telemetry, and ready to keep you company. Let's make some simple, green choices today!
+                    </div>
+                `;
+            } catch (e) {
+                console.error("Error clearing chat memory: ", e);
+            }
+        }
+    </script>
+</body>
+</html>

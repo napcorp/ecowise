@@ -1,0 +1,14 @@
+{
+    "summary": "The user is a senior who has just started using the EcoWise Companion and prefers energy efficiency.",
+    "routines": [
+        "Turns off Bedroom Lamp at some point"
+    ],
+    "user_preferences": {
+        "energy_mode": "full_eco_mode",
+        "appliances": {
+            "Bedroom Lamp": "off",
+            "Kitchen Smart Plug": "off",
+            "Living Room Thermostat": "power-saving"
+        }
+    }
+}

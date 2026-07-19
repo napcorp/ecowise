@@ -1,0 +1,8 @@
+============================================================
+========= EcoGrand Smart Device Simulation Server ==========
+============================================================
+Simulation server starting on: http://127.0.0.1:5000
+Open this URL in your web browser to control devices.
+============================================================
+ * Serving Flask app 'simulation_server'
+ * Debug mode: off
