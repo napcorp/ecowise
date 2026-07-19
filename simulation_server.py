@@ -9,7 +9,7 @@ from groq import Groq
 
 import devices
 import safety_gatekeeper
-import app as chatbot_app
+import chatbot_logic as chatbot_app
 import brain_manager
 import calendar_events
 

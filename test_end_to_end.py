@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from groq import Groq
 
 import devices
-import app
+import chatbot_logic as app
 
 # Load environmental context
 load_dotenv()
